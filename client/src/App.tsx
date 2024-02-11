@@ -1,12 +1,16 @@
-import Title from "./components/Title";
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Welcome from "./Pages/Welcome";
+import Auth from "./Pages/Auth";
+import Quiz from "./Pages/Quiz";
 function App() {
   return (
-    <div className="w-screen h-screen overflow-hidden bg-[#77DD77] flex items-center justify-center">
-      <div className="w-[35%] h-[65%] overflow-y-auto bg-[#EEEEEE] shadow-md rounded-lg py-10 px-[3%]">
-        <Title />
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Welcome />} />
+        <Route path="/join" element={<Auth />} />
+        <Route path="/quiz" element={<Quiz />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
