@@ -1,14 +1,63 @@
 import { useState } from "react";
 import Layout from "../Layout";
 import Input from "../components/Input";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [data, setData] = useState({
     name: "",
     email: "",
     password: "",
   });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isLogin) {
+      axios
+        .post(
+          "http://localhost:3001/auth/login",
+          {
+            email: data.email,
+            password: data.password,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        )
+        .then((res) => console.log(res))
+        .catch((err) => console.error(err));
+    } else {
+      axios
+        .post("http://localhost:3001/auth/register", data)
+        .then((res) => {
+          if (res.status === 201) {
+            axios
+              .post(
+                "http://localhost:3001/auth/login",
+                {
+                  email: data.email,
+                  password: data.password,
+                },
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  withCredentials: true,
+                }
+              )
+              .then(() => navigate("/"))
+              .catch((err) => console.error(err));
+          }
+        })
+        .catch((err) => console.error(err));
+    }
+  };
 
   return (
     <Layout>
@@ -22,7 +71,7 @@ const Auth = () => {
               ? "Login to save and showcase your high scores!"
               : "Sign up to embark on your personalized quiz journey"}
           </p>
-          <form className="flex flex-col gap-4 flex-1">
+          <form className="flex flex-col gap-4 flex-1" onSubmit={handleSubmit}>
             {!isLogin && (
               <Input
                 label="Name"
@@ -48,7 +97,7 @@ const Auth = () => {
               type="password"
             />
             <button className="w-full rounded-full py-3 bg-sky-500 text-white font-semibold mt-5">
-              Login
+              {isLogin ? "Login" : "Register"}
             </button>
             <p className="text-sm text-center">
               {isLogin

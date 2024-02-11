@@ -8,6 +8,7 @@ const Welcome = () => {
     localStorage.removeItem("quizData");
     localStorage.removeItem("quizProgress");
   };
+
   const quizProgress = localStorage.getItem("quizProgress");
   return (
     <Layout>
@@ -36,6 +37,7 @@ const Welcome = () => {
           )}
         </div>
       </div>
+      <div className="flex justify-center mt-2">Login</div>
     </Layout>
   );
 };
