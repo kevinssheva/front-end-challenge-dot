@@ -10,6 +10,7 @@ const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [trueAnswers, setTrueAnswers] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const [seconds, setSeconds] = useState(30);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +33,16 @@ const Quiz = () => {
       setTrueAnswers(trueAnswers);
     }
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (seconds === 0) {
+        setIsFinished(true);
+      }
+      setSeconds((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  });
 
   const handleAnswer = (answer: string) => {
     if (answer === data?.[currentQuestion - 1].correct_answer) {
@@ -98,10 +109,37 @@ const Quiz = () => {
           </div>
         ) : (
           <>
-            <h1 className="mb-2 text-gray-500">
-              Question {currentQuestion}
-              /10
-            </h1>
+            <div className="flex justify-between items-center mb-2">
+              <h1 className="mb-2 text-gray-500">
+                Question {currentQuestion}
+                /10
+              </h1>
+              <div className="w-12 aspect-square bg-white flex items-center justify-center rounded-full relative">
+                {seconds >= 15 && (
+                  <div
+                    className="w-1/2 left-1/2 h-full absolute bg-sky-300 rounded-r-full origin-left transition-all duration-1000 ease-linear"
+                    style={{
+                      rotate: `${(30 - seconds) * 12}deg`,
+                    }}
+                  ></div>
+                )}
+                <div
+                  className="w-1/2 right-1/2 h-full absolute bg-sky-300 rounded-l-full origin-right transition-all duration-1000 ease-linear"
+                  style={{
+                    rotate: `${(15 - seconds) * 12}deg`,
+                  }}
+                ></div>
+                {seconds >= 15 && (
+                  <div className="w-1/2 right-1/2 h-full absolute bg-sky-300 rounded-l-full"></div>
+                )}
+                {seconds < 15 && (
+                  <div className="w-1/2 left-1/2 h-full absolute bg-white rounded-r-full"></div>
+                )}
+                <div className="bg-white absolute w-[75%] aspect-square rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center justify-center">
+                  <p>{seconds}</p>
+                </div>
+              </div>
+            </div>
             {data && (
               <QuizComponent
                 {...data[currentQuestion - 1]}

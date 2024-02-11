@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 export interface QuizProps {
   category: string;
   correct_answer: string;
@@ -20,8 +22,10 @@ const QuizComponent = ({
   question,
   handleAnswer,
 }: QuizComponentProps) => {
-  const answers = [correct_answer, ...incorrect_answers].sort(
-    () => Math.random() - 0.5
+  const answers = useMemo(
+    () =>
+      [correct_answer, ...incorrect_answers].sort(() => Math.random() - 0.5),
+    [correct_answer, incorrect_answers]
   );
   return (
     <div className="w-full">
