@@ -30,7 +30,10 @@ const Auth = () => {
             withCredentials: true,
           }
         )
-        .then((res) => console.log(res))
+        .then(() => {
+          localStorage.setItem("isAuthenticated", "true");
+          navigate("/");
+        })
         .catch((err) => console.error(err));
     } else {
       axios
@@ -51,7 +54,10 @@ const Auth = () => {
                   withCredentials: true,
                 }
               )
-              .then(() => navigate("/"))
+              .then(() => {
+                localStorage.setItem("isAuthenticated", "true");
+                navigate("/");
+              })
               .catch((err) => console.error(err));
           }
         })

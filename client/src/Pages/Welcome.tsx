@@ -1,12 +1,49 @@
+import axios from "axios";
 import Layout from "../Layout";
 import { AiFillEdit } from "react-icons/ai";
 import { FaPlay } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { IoPersonCircleOutline } from "react-icons/io5";
+import { IoExitOutline } from "react-icons/io5";
 
 const Welcome = () => {
   const handleStart = () => {
     localStorage.removeItem("quizData");
     localStorage.removeItem("quizProgress");
+  };
+
+  const [isLogin, setIsLogin] = useState(false);
+  const [username, setUsername] = useState("");
+
+  const getUser = async () => {
+    if (!localStorage.getItem("isAuthenticated")) return;
+    const response = await axios.get("http://localhost:3001/user", {
+      withCredentials: true,
+    });
+    setUsername(response.data.name);
+    setIsLogin(true);
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:3001/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res);
+      localStorage.removeItem("isAuthenticated");
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const quizProgress = localStorage.getItem("quizProgress");
@@ -37,7 +74,34 @@ const Welcome = () => {
           )}
         </div>
       </div>
-      <div className="flex justify-center mt-2">Login</div>
+      <div className="flex justify-center mt-5">
+        {isLogin ? (
+          <div className="flex px-2 border-2 border-black rounded-full items-center py-1">
+            <div className="flex gap-2">
+              <IoPersonCircleOutline size={24} />
+              <p className="text-black">
+                Hi,{" "}
+                <span className="font-semibold">{username.split(" ")[0]}</span>
+              </p>
+            </div>
+            <div className="h-4 w-[1px] bg-black mx-2"></div>
+            <div
+              className="flex gap-2 hover:scale-105 transition-all items-center justify-center rounded-r-full cursor-pointer text-red-500"
+              onClick={handleLogout}
+            >
+              {/* <p className="text-sm">Logout</p> */}
+              <IoExitOutline size={22} />
+            </div>
+          </div>
+        ) : (
+          <Link
+            to={"/join"}
+            className="underline cursor-pointer text-sm hover:text-sky-500 transition-all"
+          >
+            Login to your account
+          </Link>
+        )}
+      </div>
     </Layout>
   );
 };
