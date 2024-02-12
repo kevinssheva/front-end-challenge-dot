@@ -6,11 +6,11 @@ import { Link } from "react-router-dom";
 
 const Quiz = () => {
   const [data, setData] = useState<QuizProps[]>();
-  // const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(1);
   const [trueAnswers, setTrueAnswers] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
-  const [seconds, setSeconds] = useState(30);
+  const [seconds, setSeconds] = useState(3000);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,24 +23,29 @@ const Quiz = () => {
         setData(data?.results);
         localStorage.setItem("quizData", JSON.stringify(data?.results));
       }
+
+      const storedProgress = localStorage.getItem("quizProgress");
+      if (storedProgress) {
+        const { currentQuestion, trueAnswers, seconds } =
+          JSON.parse(storedProgress);
+        setCurrentQuestion(currentQuestion);
+        setTrueAnswers(trueAnswers);
+        setSeconds(seconds);
+      }
+      setIsLoading(false);
     };
     fetchData();
-
-    const storedProgress = localStorage.getItem("quizProgress");
-    if (storedProgress) {
-      const { currentQuestion, trueAnswers } = JSON.parse(storedProgress);
-      setCurrentQuestion(currentQuestion);
-      setTrueAnswers(trueAnswers);
-    }
   }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (seconds === 0) {
         setIsFinished(true);
+        localStorage.removeItem("quizData");
+        localStorage.removeItem("quizProgress");
       }
-      setSeconds((prev) => prev - 1);
-    }, 1000);
+      !isLoading && setSeconds((prev) => prev - 1);
+    }, 10);
     return () => clearInterval(interval);
   });
 
@@ -59,11 +64,11 @@ const Quiz = () => {
         JSON.stringify({
           currentQuestion: currentQuestion + 1,
           trueAnswers,
+          seconds,
         })
       );
     }
   };
-  console.log(data);
   return (
     <Layout>
       <div
@@ -94,7 +99,7 @@ const Quiz = () => {
               </div>
               <div className="flex justify-between font-semibold text-gray-500">
                 <p>Wrong Answer</p>
-                <p className="text-black">{10 - trueAnswers}</p>
+                <p className="text-black">{currentQuestion - trueAnswers}</p>
               </div>
             </div>
             <div className="flex justify-center mt-5">
@@ -107,6 +112,12 @@ const Quiz = () => {
               </Link>
             </div>
           </div>
+        ) : isLoading ? (
+          <div className="flex flex-row justify-center gap-2 py-20">
+            <div className="w-3 h-3 rounded-full bg-sky-500 animate-bounce"></div>
+            <div className="w-3 h-3 rounded-full bg-sky-500 animate-bounce [animation-delay:-.3s]"></div>
+            <div className="w-3 h-3 rounded-full bg-sky-500 animate-bounce [animation-delay:-.5s]"></div>
+          </div>
         ) : (
           <>
             <div className="flex justify-between items-center mb-2">
@@ -115,28 +126,28 @@ const Quiz = () => {
                 /10
               </h1>
               <div className="w-12 aspect-square bg-white flex items-center justify-center rounded-full relative">
-                {seconds >= 15 && (
+                {seconds >= 1500 && (
                   <div
                     className="w-1/2 left-1/2 h-full absolute bg-sky-300 rounded-r-full origin-left transition-all duration-1000 ease-linear"
                     style={{
-                      rotate: `${(30 - seconds) * 12}deg`,
+                      rotate: `${(3000 - seconds) * 0.12}deg`,
                     }}
                   ></div>
                 )}
                 <div
                   className="w-1/2 right-1/2 h-full absolute bg-sky-300 rounded-l-full origin-right transition-all duration-1000 ease-linear"
                   style={{
-                    rotate: `${(15 - seconds) * 12}deg`,
+                    rotate: `${(1500 - seconds) * 0.12}deg`,
                   }}
                 ></div>
-                {seconds >= 15 && (
+                {seconds >= 1500 && (
                   <div className="w-1/2 right-1/2 h-full absolute bg-sky-300 rounded-l-full"></div>
                 )}
-                {seconds < 15 && (
+                {seconds < 1500 && (
                   <div className="w-1/2 left-1/2 h-full absolute bg-white rounded-r-full"></div>
                 )}
                 <div className="bg-white absolute w-[75%] aspect-square rounded-full left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center justify-center">
-                  <p>{seconds}</p>
+                  <p>{Math.floor(seconds / 100)}</p>
                 </div>
               </div>
             </div>

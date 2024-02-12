@@ -49,7 +49,7 @@ const Welcome = () => {
   const quizProgress = localStorage.getItem("quizProgress");
   return (
     <Layout>
-      <div className="w-full h-full flex flex-col items-center justify-center gap-10">
+      <div className="w-full h-full flex flex-col items-center justify-center gap-5">
         <div className="text-center">
           <h1 className="text-3xl font-black">Quizdot</h1>
           <p>Get Ready to Challenge Your Knowledge!</p>
