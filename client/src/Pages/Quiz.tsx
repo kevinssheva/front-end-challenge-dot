@@ -99,7 +99,11 @@ const Quiz = () => {
               </div>
               <div className="flex justify-between font-semibold text-gray-500">
                 <p>Wrong Answer</p>
-                <p className="text-black">{currentQuestion - trueAnswers}</p>
+                <p className="text-black">
+                  {currentQuestion === 10
+                    ? currentQuestion - trueAnswers
+                    : currentQuestion - trueAnswers - 1}
+                </p>
               </div>
             </div>
             <div className="flex justify-center mt-5">
